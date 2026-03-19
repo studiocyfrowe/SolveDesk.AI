@@ -32,23 +32,19 @@ async def explain_solutions(
         )
 
         prompt = f"""
-            Jesteś asystentem IT dla helpdesku.
+            You are an IT helpdesk assistant.
 
-            Na podstawie poniższej bazy zaproponuj rozwiązania problemu.
-            Opisz swoimi słowami jak rozwiązać problem.
+            Use ONLY the context to answer.
+            If no solution: "No solution in the SolveDesk database."
 
-            Jeżeli nie znajdziesz rozwiązania napisz:
-            "Brak rozwiązania w bazie SolveDesk".
-
-            KONTEKST:
-
+            CONTEXT:
             {context}
 
-            PYTANIE:
+            QUESTION:
             {request.query}
 
-            ODPOWIEDŹ: (opisz swoimi słowami bazując w oparciu o KONTEKT, odpowiedz pełnym wyjaśnieniem w kilku zdaniach.)
-            """
+            ANSWER:
+        """
 
         start = time.perf_counter()
         response = requests.post(
@@ -62,7 +58,7 @@ async def explain_solutions(
                     "temperature": 0.3
                 }
             },
-            timeout=60
+            timeout=240
         )
         end = time.perf_counter()
         elapsed = round(end - start, 2)

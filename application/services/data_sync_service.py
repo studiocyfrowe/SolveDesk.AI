@@ -6,20 +6,24 @@ class DataSyncService:
 
     def sync(self):
         issues = self.source.fetch()
+
         for issue in issues:
-            text = issue["issueSympthoms"]
+            text = issue.get("ticketBody") or ""
+
             emb = self.embedder.embed(text)
 
+            metadata = {
+                "ticketId": issue.get("ticketId"),
+                "ticketName": issue.get("ticketName") or "",
+                "ticketBody": text,
+                "ticketAnswer": issue.get("ticketAnswer") or ""
+            }
+
             self.vector_store.add_new(
-                doc_id=str(issue["issueItemId"]),
+                doc_id=str(issue.get("ticketId")),
                 embedding=emb,
                 document=text,
-                metadata={
-                    "issueItemId": issue["issueItemId"],
-                    "issueName": issue["issueName"],
-                    "issueSympthoms": issue["issueSympthoms"],
-                    "issueSolution": issue["issueSolution"]
-                }
+                metadata=metadata
             )
-        
+
         return len(issues)

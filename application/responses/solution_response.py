@@ -7,10 +7,10 @@ class SolutionResponse():
             "query": query,
             "solutions": [
                 {
-                    "issue_id": results['metadatas'][0][i]['issueItemId'],
-                    "issue_name": results['metadatas'][0][i]['issueName'],
-                    "issue_sympthoms": results['metadatas'][0][i]['issueSympthoms'],
-                    "issue_solution": results['metadatas'][0][i]['issueSolution'],
+                    "issue_id": results['metadatas'][0][i]['ticketId'],
+                    "issue_name": results['metadatas'][0][i]['ticketName'],
+                    "issue_sympthoms": results['metadatas'][0][i]['ticketBody'],
+                    "issue_solution": results['metadatas'][0][i]['ticketAnswer'],
                     "score": round(1 - results['distances'][0][i], 3)
                 }
                 for i in range(len(results['ids'][0]))
