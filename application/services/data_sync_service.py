@@ -6,24 +6,39 @@ class DataSyncService:
 
     def sync(self):
         issues = self.source.fetch()
+        processed = 0
 
         for issue in issues:
+            raw_id = issue.get("ticketId")
+
+            if raw_id is None:
+                print(f"Pominięto rekord bez ticketId: {issue}")
+                continue
+
+            doc_id = str(raw_id)
+
             text = issue.get("ticketBody") or ""
+
+            if not text.strip():
+                print(f"Pusty ticketBody dla ID: {doc_id}")
+                continue
 
             emb = self.embedder.embed(text)
 
             metadata = {
-                "ticketId": issue.get("ticketId"),
+                "ticketId": raw_id,
                 "ticketName": issue.get("ticketName") or "",
                 "ticketBody": text,
                 "ticketAnswer": issue.get("ticketAnswer") or ""
             }
 
             self.vector_store.add_new(
-                doc_id=str(issue.get("ticketId")),
+                doc_id=doc_id,
                 embedding=emb,
                 document=text,
                 metadata=metadata
             )
 
-        return len(issues)
+            processed += 1
+
+        return processed
